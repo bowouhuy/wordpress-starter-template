@@ -1,0 +1,32 @@
+version: '3.5'
+services:
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    volumes:
+      - ./:/var/www/html/wp-content/themes/wordpress
+    ports:
+      - 8010:80
+    # restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: root
+      WORDPRESS_DB_NAME: wordpress_db
+
+  db:
+    image: mysql:latest
+    # restart: always
+    ports:
+      - 33070:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress_db
+      MYSQL_INITDB_SQL: /docker-entrypoint-initdb.d/init.sql  # Specify the initialization script
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount the initialization script
+
+volumes:
+  db_data:
